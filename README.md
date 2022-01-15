@@ -8,7 +8,7 @@ Before you run alpha and beta app, please install docker and docker-compose.
 * Run `sudo docker-compose build`
 * Run `sudo docker-compose up`
 * Run `sudo docker-compose exec beta bash`
-* Inside bash shell of beta, run:
+* Inside bash shell of beta app, run:
 
   ```
   /app# flask db upgrade
@@ -45,3 +45,8 @@ Before you run alpha and beta app, please install docker and docker-compose.
   To get list of attacks activity:
 
   [http://172.17.0.1:10000/attacks](http://172.17.0.1:10000/attacks)
+
+
+Note: 
+
+IP <b>172.17.0.1</b> is Docker IP. <br>Please adjust with your own Docker IP.
