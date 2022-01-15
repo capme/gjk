@@ -15,6 +15,10 @@ Before you run alpha and beta app, please install docker and docker-compose.
   /app# exit
   ```
 ### Endpoint Alpha ###
+
+Note: <br>
+IP <b>172.17.0.1</b> is Docker IP. <br>Please adjust with your own Docker IP.
+
 * Vulnerable SQL Injection
 
   [http://172.17.0.1:65412/?id=2](http://172.17.0.1:65412/?id=2)
@@ -45,8 +49,3 @@ Before you run alpha and beta app, please install docker and docker-compose.
   To get list of attacks activity:
 
   [http://172.17.0.1:10000/attacks](http://172.17.0.1:10000/attacks)
-
-
-Note: 
-
-IP <b>172.17.0.1</b> is Docker IP. <br>Please adjust with your own Docker IP.
