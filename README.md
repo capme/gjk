@@ -1,29 +1,14 @@
-# README #
+# Alpha and Beta app #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Before you run alpha and beta app, please install docker and docker-compose.
 
-### What is this repository for? ###
+### How to run Alpha and Beta app? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* Clone this repository
+* Run `docker-compose up`
+* To visit Alpha:
 
-### How do I get set up? ###
+  [http://172.17.0.1:65412/](http://172.17.0.1:65412/)
+* To visit Beta:
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+  [http://172.17.0.1:10000/](http://172.17.0.1:10000/)
