@@ -1,5 +1,7 @@
 #!/usr/bin/env python3.8
 import http.client, http.server, io, os, re, socket, socketserver, sqlite3, sys, subprocess, traceback, urllib.parse, urllib.request, xml.etree.ElementTree
+import json
+import requests
 
 LISTEN_ADDRESS, LISTEN_PORT = "0.0.0.0", 65412
 HTML_PREFIX, HTML_POSTFIX = "<!DOCTYPE html>\n<html>\n<head>\n", "</body>\n</html>"
@@ -19,27 +21,59 @@ def init():
 
 
 class ReqHandler(http.server.BaseHTTPRequestHandler):
+
+    def _check_signature(self, data, param_signature):
+        signature = {
+            "sql_injection": ["'", "select", "SELECT"],
+            "rfi": ["https", "http", ":", "/"],
+            "path_traversal": ["..", "/", "etc", "passwd", "shadow"]
+        }
+        for item in signature[param_signature]:
+            if item in data:
+                r = requests.post('http://beta:5000/attack/', json={"attack_name": param_signature})
+                break
+
     def do_GET(self):
+
         path, query = self.path.split('?', 1) if '?' in self.path else (self.path, "")
         code, content, params, cursor = http.client.OK, HTML_PREFIX, dict((match.group("parameter"), urllib.parse.unquote(','.join(re.findall(r"(?:\A|[?&])%s=([^&]+)" % match.group("parameter"), query)))) for match in re.finditer(r"((\A|[?&])(?P<parameter>[\w\[\]]+)=)([^&]+)", query)), connection.cursor()
+        f = open("log_alpha.txt", "a")
+        f.write(path)
+        f.write("\n")
+        f.write(query)
+        f.write("\n")
+        f.write(json.dumps(code))
+        f.write("\n")
+        f.write(content)
+        f.write("\n")
+        f.write(json.dumps(params))
+        f.write("\n")
+        f.write(str(cursor))
+        f.write("\n")
+        f.close()
         try:
             if path == '/':
                 if "id" in params:
+                    self._check_signature(params["id"], "sql_injection")
                     cursor.execute("SELECT id, username, name, surname FROM users WHERE id=" + params["id"])
                     content += "<div><span>Result(s):</span></div><table><thead><th>id</th><th>username</th><th>name</th><th>surname</th></thead>%s</table>%s" % ("".join("<tr>%s</tr>" % "".join("<td>%s</td>" % ("-" if _ is None else _) for _ in row) for row in cursor.fetchall()), HTML_POSTFIX)
                 elif "v" in params:
                     content += re.sub(r"(v<b>)[^<]+(</b>)", r"\g<1>%s\g<2>" % params["v"], HTML_POSTFIX)
                 elif "include" in params:
+                    self._check_signature(params["include"], "rfi")
                     backup, sys.stdout, program, envs = sys.stdout, io.StringIO(), (open(params["include"], "rb") if not "://" in params["include"] else urllib.request.urlopen(params["include"])).read(), {"DOCUMENT_ROOT": os.getcwd(), "HTTP_USER_AGENT": self.headers.get("User-Agent"), "REMOTE_ADDR": self.client_address[0], "REMOTE_PORT": self.client_address[1], "PATH": path, "QUERY_STRING": query}
                     exec(program, envs)
                     content += sys.stdout.getvalue()
                     sys.stdout = backup
+                elif "path" in params:
+                    self._check_signature(params["path"], "path_traversal")
+                    content = (open(os.path.abspath(params["path"]), "rb") if not "://" in params["path"] else urllib.request.urlopen(params["path"])).read().decode()
                 if HTML_PREFIX in content and HTML_POSTFIX not in content:
                     content += """
                     <div><span>Vulnerable endpoint:</span></div>
                     <ul>
                     <li><a href="?id=2">SQL Injection</a></li>
-                    <li><a href="/?v=0.2">Cross Site Scripting</a></li>
+                    <li><a href="/?path=">Path Traversal</a></li>
                     <li><a href="/?include=">Remote File Inclusion</a></li>
                     </ul>
                     """
