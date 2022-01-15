@@ -31,7 +31,7 @@ services:
     env_file:
       - .env
     volumes:
-      - "$PWD/mysql_data:/var/lib/mysql"
+      - "$PWD/mysql_data_gjk_n:/var/lib/mysql"
     entrypoint:
       - docker-entrypoint.sh
       - mysqld
