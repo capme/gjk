@@ -1,0 +1,41 @@
+# Base Flask
+Flask==1.1.2
+
+# Scripting for Flask
+Flask-Script==2.0.6
+
+# Simple framework Rest APIs
+Flask-RESTful==0.3.9
+
+# Add SQLAlchemy
+Flask-SQLAlchemy==2.5.1
+
+# Add .env support
+python-dotenv==0.19.2
+
+# gevent
+gevent==21.12.0
+
+# gunicorn
+gunicorn==20.1.0
+
+# Eventlet for async
+eventlet==0.33.0
+
+# for migrate
+Flask-Migrate==2.5.3
+
+# pymysql
+pymysql==1.0.2
+
+# cryptography
+cryptography==36.0.1
+
+# flask marshmallow
+flask-marshmallow==0.13.0
+
+# marshmallow-sqlalchemy
+marshmallow-sqlalchemy==0.27.0
+
+# lxml -> for one of vuln machine
+lxml
