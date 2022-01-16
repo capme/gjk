@@ -14,10 +14,13 @@ Before you run alpha and beta app, please install docker and docker-compose.
   /app# flask db upgrade
   /app# exit
   ```
-### Endpoint Alpha ###
-
+  
 Note: <br>
-IP <b>172.17.0.1</b> is Docker IP. <br>Please adjust with your own Docker IP.
+a. IP <b>172.17.0.1</b> is Docker IP. Please adjust with your own Docker IP.<br>
+b. It need port 65412 for alpha, 10000 for beta and 3306 for MySQL. Please free-up those IPs.
+
+
+### Endpoint Alpha ###
 
 * Vulnerable SQL Injection
 
