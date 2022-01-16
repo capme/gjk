@@ -23,7 +23,6 @@ def init():
 class ReqHandler(http.server.BaseHTTPRequestHandler):
 
     def _check_signature(self, data, param_signature):
-        self.client_address
         signature = {
             "SQL Injection": ["'", "select", "SELECT"],
             "Remote File Inclusion": ["https", "http", ":", "/"],
