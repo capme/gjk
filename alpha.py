@@ -23,14 +23,15 @@ def init():
 class ReqHandler(http.server.BaseHTTPRequestHandler):
 
     def _check_signature(self, data, param_signature):
+        self.client_address
         signature = {
-            "sql_injection": ["'", "select", "SELECT"],
-            "rfi": ["https", "http", ":", "/"],
-            "path_traversal": ["..", "/", "etc", "passwd", "shadow"]
+            "SQL Injection": ["'", "select", "SELECT"],
+            "Remote File Inclusion": ["https", "http", ":", "/"],
+            "Path Traversal": ["..", "/", "etc", "passwd", "shadow"]
         }
         for item in signature[param_signature]:
             if item in data:
-                r = requests.post('http://beta:5000/attack/', json={"attack_name": param_signature})
+                r = requests.post('http://beta:5000/attack/', json={"attack_name": "{} had attempt {}".format(self.client_address[0], param_signature)})
                 break
 
     def do_GET(self):
@@ -54,19 +55,19 @@ class ReqHandler(http.server.BaseHTTPRequestHandler):
         try:
             if path == '/':
                 if "id" in params:
-                    self._check_signature(params["id"], "sql_injection")
+                    self._check_signature(params["id"], "SQL Injection")
                     cursor.execute("SELECT id, username, name, surname FROM users WHERE id=" + params["id"])
                     content += "<div><span>Result(s):</span></div><table><thead><th>id</th><th>username</th><th>name</th><th>surname</th></thead>%s</table>%s" % ("".join("<tr>%s</tr>" % "".join("<td>%s</td>" % ("-" if _ is None else _) for _ in row) for row in cursor.fetchall()), HTML_POSTFIX)
                 elif "v" in params:
                     content += re.sub(r"(v<b>)[^<]+(</b>)", r"\g<1>%s\g<2>" % params["v"], HTML_POSTFIX)
                 elif "include" in params:
-                    self._check_signature(params["include"], "rfi")
+                    self._check_signature(params["include"], "Remote File Inclusion")
                     backup, sys.stdout, program, envs = sys.stdout, io.StringIO(), (open(params["include"], "rb") if not "://" in params["include"] else urllib.request.urlopen(params["include"])).read(), {"DOCUMENT_ROOT": os.getcwd(), "HTTP_USER_AGENT": self.headers.get("User-Agent"), "REMOTE_ADDR": self.client_address[0], "REMOTE_PORT": self.client_address[1], "PATH": path, "QUERY_STRING": query}
                     exec(program, envs)
                     content += sys.stdout.getvalue()
                     sys.stdout = backup
                 elif "path" in params:
-                    self._check_signature(params["path"], "path_traversal")
+                    self._check_signature(params["path"], "Path Traversal")
                     content = (open(os.path.abspath(params["path"]), "rb") if not "://" in params["path"] else urllib.request.urlopen(params["path"])).read().decode()
                 if HTML_PREFIX in content and HTML_POSTFIX not in content:
                     content += """
