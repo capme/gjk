@@ -1,9 +1,10 @@
-FROM alpine:latest
+FROM python:latest
 
-RUN apk --no-cache add git python3 py3-pip \
-    && rm -rf /var/cache/apk/*
+#RUN apk --no-cache add git python3 py3-pip \
+#    && rm -rf /var/cache/apk/*
 
 WORKDIR /app
 RUN pip3 install requests
 
 CMD ["python3", "alpha.py"]
+
